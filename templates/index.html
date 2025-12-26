@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Sniffer Dashboard</title>
+
+    <!-- Favicon Setup with Cache Busting -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='spy.svg') }}?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon_32.png') }}?v=2">
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='favicon_64.png') }}?v=2">
+    <link rel="icon" type="image/png" sizes="256x256" href="{{ url_for('static', filename='favicon_256.png') }}?v=2">
+    
+    <!-- Mobile / PWA Support -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon_256.png') }}?v=2">
+    <meta name="theme-color" content="#020314">
+    <meta name="description" content="Real-time network packet sniffer with neon cyberpunk dashboard">
+
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="bg-overlay"></div>
+
+    <header class="top-bar">
+        <!-- Cyber Spy Hacker Badge -->
+        <svg class="spy-badge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <style>
+                .hacker-eye { fill:#4ad4ff; animation: blink 3s infinite; }
+                @keyframes blink {
+                    0%,80% {opacity:1;}
+                    85%,90% {opacity:0;}
+                    100% {opacity:1;}
+                }
+            </style>
+            <path d="M256 0c-38 0-71 31-78 69h156c-7-38-40-69-78-69z" fill="#0ff"/>
+            <path d="M120 122c-43 33-70 85-70 142v120c0 48 23 85 70 101h272c47-16 70-53 70-101V264c0-57-27-109-70-142L256 89 120 122z" fill="#00101f" stroke="#0ff" stroke-width="10"/>
+            <circle class="hacker-eye" cx="180" cy="300" r="42"/>
+            <circle class="hacker-eye" cx="330" cy="300" r="42"/>
+        </svg>
+        <h1 class="title">Network Sniffer Dashboard</h1>
+        <div class="top-right">
+            <span class="user-pill">Hello, {{ username }}</span>
+            <a href="/export_pcap" class="btn-secondary">⬇ Export .pcap</a>
+            <a href="/export_csv" class="btn-secondary">⬇ Export .csv</a>
+            <a href="/logout" class="btn-secondary">Logout</a>
+        </div>
+    </header>
+
+    <section class="stats-container">
+        <div class="card neon-card">
+            <span class="label">Total Packets Captured</span>
+            <span id="total" class="value">0</span>
+            <span class="pill live-pill">
+                <span class="dot"></span> Live Sniffing
+            </span>
+        </div>
+
+        <div class="card neon-card">
+            <span class="label">Protocol Stats</span>
+            <pre id="proto" class="proto-box">{}</pre>
+        </div>
+
+        <div class="card neon-card">
+            <span class="label">Category Stats</span>
+            <pre id="cat" class="proto-box">{}</pre>
+        </div>
+    </section>
+
+    <section class="filters-section">
+        <div class="filter-group">
+            <label>Protocol Filter</label>
+            <select id="protocolFilter">
+                <option value="ALL">All</option>
+                <option value="TCP">TCP</option>
+                <option value="UDP">UDP</option>
+                <option value="ICMP">ICMP</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Category Filter</label>
+            <select id="categoryFilter">
+                <option value="ALL">All</option>
+                <option value="HTTP">HTTP</option>
+                <option value="HTTPS">HTTPS</option>
+                <option value="DNS">DNS</option>
+                <option value="OTHER">Other</option>
+            </select>
+        </div>
+
+        <button id="applyFilters" class="btn-primary">Apply Filters</button>
+
+        <div class="filter-group search-group">
+            <label>Search (IP / proto / info)</label>
+            <input type="text" id="searchBox" placeholder="Search packets...">
+        </div>
+
+        <div class="filter-group">
+            <label>Rows per page</label>
+            <select id="rowsPerPage">
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+    </section>
+
+    <section class="charts-container">
+        <div class="chart-card">
+            <h2>📊 Protocol Distribution</h2>
+            <canvas id="protocolChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>📈 Packet Size Trend</h2>
+            <canvas id="sizeChart"></canvas>
+        </div>
+    </section>
+
+    <section>
+        <h2 class="subtitle">🔍 Recent Packets</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Src IP</th>
+                        <th>Dst IP</th>
+                        <th>Proto</th>
+                        <th>Category</th>
+                        <th>Len</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button id="prevPage" class="btn-secondary">Prev</button>
+            <span id="pageInfo"></span>
+            <button id="nextPage" class="btn-secondary">Next</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Made with <span class="heart">❤️</span> by <strong>Mandar Kajbaje</strong></p>
+            <p>&copy; 2025 Network Sniffer. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://github.com/Mandar123454/Network-Sniffer-Dashboard" target="_blank" class="footer-link">GitHub</a>
+                <span class="link-separator">|</span>
+                <a href="https://github.com/Mandar123454/Network-Sniffer-Dashboard/blob/main/LICENSE" target="_blank" class="footer-link">License</a>
+                <span class="link-separator">|</span>
+                <a href="https://github.com/Mandar123454/Network-Sniffer-Dashboard/blob/main/CONTRIBUTING.md" target="_blank" class="footer-link">Contributing</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

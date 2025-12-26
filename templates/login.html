@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Network Sniffer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-body">
+    <div class="login-card">
+        <h1 class="title">🔐 Network Sniffer Login</h1>
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+        <form method="post">
+            <label>Username</label>
+            <input type="text" name="username" required value="admin">
+
+            <label>Password</label>
+            <input type="password" name="password" required value="admin123">
+
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+        <p class="login-hint">Demo credentials: <b>admin / admin123</b></p>
+    </div>
+</body>
+</html>

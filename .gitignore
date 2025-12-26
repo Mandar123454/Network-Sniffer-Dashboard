@@ -1,45 +1,83 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
-.dist/
-.build/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Environments
-.env
-.env.*
+# Virtual Environment
 .venv/
 venv/
 ENV/
-
-# Logs & caches
-*.log
-*.pid
-*.pid.lock
-.cache/
-pytest_cache/
-.coverage
-htmlcov/
-
-# OS/Editor
-.DS_Store
-Thumbs.db
+env/
+.env
 .vscode/
 .idea/
 
-# Jupyter
-.ipynb_checkpoints/
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
 
-# Flask/Scapy app artifacts
-*.sqlite3
+# Project specific
+*.pcap
+capture_export.pcap
+network_capture.pcap
+packets.csv
+*.log
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+*.orig
+
+# Flask
 instance/
+.webassets-cache
 
-# Visualization outputs
-*.png
-*.svg
-*.pdf
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Node (if any future UI tooling)
-node_modules/
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Compiled
+*.class
+*.pyc
+*.pyo
+
+# Security
+.env.local
+.env.*.local
+secrets.txt
+
+# Dependencies lock files (optional)
+# Uncomment if you want to commit lock files
+# poetry.lock
+# Pipfile.lock
